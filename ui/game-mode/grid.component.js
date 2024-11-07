@@ -1,6 +1,6 @@
 import { liba } from "../../shared/liba.js";
 import { getGridSize } from "../../state/data.js";
-import { cell } from "./sell.component.js";
+import { cell } from "./cell.component.js";
 
 export const grid = () => {
   console.log("grid load");
