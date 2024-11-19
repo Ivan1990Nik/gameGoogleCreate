@@ -13,8 +13,8 @@ const _state = {
   },
   positions: {
     google: { x: null, y: null },
-    player1: { x: 0, y: 0 },
-    player2: { x: 1, y: 0 },
+    player1: { x: 0, y: 0, isInJail: false },
+    player2: { x: 1, y: 0, isInJail: false },
   },
   points: {
     google: 0,
@@ -25,68 +25,89 @@ const _state = {
 };
 
 
-
+export function getWinMessage() {
+  return _state.win;
+}
+export function setWinMessage(result) {
+  _state.win = result;
+}
 
 let _observers = [];
+
+function _notify(type, payload = {}) {
+  const event = {
+    type,
+    payload,
+  };
+  _observers.forEach((o) => o(event));
+}
 
 export function subscribe(callback) {
   _observers.push(callback);
   return () => {
-    unsubscribe(callback)
-  }
+    unsubscribe(callback);
+  };
 }
-
 
 export function unsubscribe(callback) {
   _observers = _observers.filter((o) => o !== callback);
 }
 
-function _notify(type, payload = {}) {
-  const event = {
-    type,
-    payload
-  }
-  _observers.forEach((o) => o(event));
+export function getresultPoints() {
+  return _state.settings;
 }
-
-
-
-
-
 export function getStatus() {
   return _state.status;
 }
-
 export function getGridSize() {
   return _state.settings.gridSize;
 }
-
 export function getPositions() {
   return _state.positions;
 }
+export function getPoins() {
+  return _state.points;
+}
+
+let localState = { ..._state.points };
+
+function resetPoints() {
+  for (const player in localState) {
+    _state.points[player] = 0; // Сбрасываем очки каждого игрока
+  }
+}
+function removePlayer(playerKey) {
+  if (_state.points[playerKey] !== undefined) {
+    delete _state.points[playerKey];
+  }
+  _state.positions.player2 = { x: undefined, y: undefined };
+  return _state;
+}
 
 export function playAgain() {
+  resetPoints();
   _state.status = GAME_STATUSES.SETTINGS;
-  _state.points.google = "";
-  _state.points.player1 = "";
-  _state.points.player2 = "";
-  _notify();
+  _notify(EVENTS.STATUS_CHANGED);
 }
 
 export function startGame(
   selectedGridSize,
   selectedPointsWin,
-  selectedPointsLose
+  selectedPointsLose,
+  isTwoPlayer
 ) {
+  if (isTwoPlayer === false) {
+    removePlayer("player2");
+  }
   _state.status = GAME_STATUSES.IN_PROGRESS;
-  _notify(EVENTS.STATUS_CHANGED);
+
   selectingNumberOfGrids(selectedGridSize);
   selectingNumberWin(selectedPointsWin);
   selectingNumberLose(selectedPointsLose);
 
+  _notify(EVENTS.STATUS_CHANGED);
   _teleportGoogle();
 
- /*  _notify(event); */
   jumpIntervalId = setInterval(_escapeGoogle, 1000);
 }
 
@@ -111,7 +132,7 @@ function selectingNumberOfGrids(selectedGridSize) {
 function selectingNumberWin(selectedPointsWin) {
   switch (selectedPointsWin) {
     case "1":
-      _state.settings.pointsToWin = 10;
+      _state.settings.pointsToWin = 5;
       break;
     case "2":
       _state.settings.pointsToWin = 20;
@@ -124,7 +145,7 @@ function selectingNumberWin(selectedPointsWin) {
 function selectingNumberLose(selectedPointsLose) {
   switch (selectedPointsLose) {
     case "1":
-      _state.settings.pointsToLose = 20;
+      _state.settings.pointsToLose = 10;
       break;
     case "2":
       _state.settings.pointsToLose = 30;
@@ -173,22 +194,34 @@ export function movePlayer(playerNumber, direction) {
   if (!_isInsideGrid(newCoords)) {
     return;
   }
-let prevPosition = {..._state.positions["player" + playerNumber] }
+  let prevPosition = { ..._state.positions["player" + playerNumber] };
   _state.positions["player" + playerNumber] = newCoords;
 
   if (_isPlayerInOnePositionWithGoogle(playerNumber)) {
     _catchGoogle(playerNumber);
   }
   if (_playersMeeting(playerNumber)) {
-    startTimer(playerNumber);
+    moveToJail(playerNumber)
   }
   _notify(EVENTS.PLAYER_MOVED, {
-    newPosition: {...newCoords},
-      prevPosition:  prevPosition, 
-     /*  playerNumber: playerNumber */
-    
+    newPosition: { ...newCoords },
+    prevPosition: prevPosition,
+    playerNumber: playerNumber,
   });
 }
+
+function moveToJail(playerNumber) {
+  if (playerNumber === 1) {
+    _state.positions.player1.isInJail = true;
+  } else if (playerNumber === 2) {
+    _state.positions.player2.isInJail = true;
+  }
+  
+  
+  console.log(`Игрок ${playerNumber} попал в тюрьму!`);
+}
+
+
 
 function _isPlayerInOnePositionWithGoogle(playerNumber) {
   const playerPosition = _state.positions["player" + playerNumber];
@@ -199,6 +232,7 @@ function _isPlayerInOnePositionWithGoogle(playerNumber) {
     playerPosition.y === googlePosition.y
   );
 }
+
 function _catchGoogle(playerNumber) {
   _state.points["player" + playerNumber]++;
   clearInterval(jumpIntervalId);
@@ -207,12 +241,11 @@ function _catchGoogle(playerNumber) {
 
   if (_state.points["player" + playerNumber] === _state.settings.pointsToWin) {
     const result = playerNumber === 1 ? "Player 1 Wins!" : "Player 2 Wins!";
-    alert(result);
+    setWinMessage(result);
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
-    console.log(result);
-    _notify(EVENTS.STATUS_CHANGED)
+    _notify(EVENTS.STATUS_CHANGED, {});
   }
   _teleportGoogle();
 }
@@ -230,8 +263,7 @@ function _teleportGoogle() {
     return;
   }
 
-
-  const prevPosition = {..._state.positions.google}
+  const prevPosition = { ..._state.positions.google };
   _state.positions.google.x = newX;
   _state.positions.google.y = newY;
   _state.points.google++;
@@ -240,35 +272,17 @@ function _teleportGoogle() {
     resetPositionPlayers();
     _state.status = GAME_STATUSES.LOSE;
     clearInterval(jumpIntervalId);
+    _notify(EVENTS.STATUS_CHANGED);
   }
   _notify(EVENTS.GOOGLE_JUMPED, {
-    newPosition: {..._state.positions.google},
-      prevPosition:  prevPosition
-    
+    newPosition: { ..._state.positions.google },
+    prevPosition: prevPosition,
   });
-  
 }
 
 function resetPositionPlayers() {
   _state.positions.player1 = { x: 0, y: 0 };
   _state.positions.player2 = { x: 1, y: 0 };
-}
-
-function startTimer(playerNumber) {
-  if (playerNumber === 1) {
-    _state.positions.player2 = { x: 15, y: 15 };
-    
-    setTimeout(() => {
-      _state.positions.player2 = { x: _getRandomInt(4), y: _getRandomInt(4) };
-    }, 2000);
-  } else {
-    _state.positions.player1 = { x: 15, y: 15 };
-    setTimeout(() => {
-      _state.positions.player1 = { x: _getRandomInt(4), y: _getRandomInt(4) };
-    }, 2000);
-  }
-
-  _notify();
 }
 
 function _playersMeeting() {
@@ -289,7 +303,7 @@ function _isInsideGrid(coords) {
 }
 
 function _escapeGoogle() {
-  _notify(EVENTS.GOOGLE_ESCAPED)
+  _notify(EVENTS.GOOGLE_ESCAPED);
   _teleportGoogle();
 }
 

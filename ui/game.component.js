@@ -33,14 +33,11 @@ export const Game = () => {
 
 Game.render = (element, localState) => {
   const status = getStatus();
-  if (localState.status === status) return;
   console.log("game load");
-
   localState.status = status;
   element.innerHTML = "";
   localState.childrenCleanups.forEach((cc) => cc());
   localState.childrenCleanups = [];
-
   switch (status) {
     case GAME_STATUSES.SETTINGS:
       const settingsModeInstance = SettingsMode();
@@ -59,6 +56,7 @@ Game.render = (element, localState) => {
       break;
     case GAME_STATUSES.WIN:
       const winModeInstance = WinMode();
+      localState.childrenCleanups.push(winModeInstance.cleanup);
       element.append(winModeInstance.element);
       break;
     default:

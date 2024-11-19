@@ -28,13 +28,6 @@ grid.render = (element, localState) => {
 
   const gridSize = getGridSize();
 
-  const jail = liba.create("div", ["style__jail"]);
-  jail.append();
-
-  const images = liba.create("img", ["img_style"]);
-  images.src = "icon/grate.png";
-
-  jail.append(images);
 
   for (let y = 0; y < gridSize.rowsCount; y++) {
     const row = liba.create("tr");
@@ -44,6 +37,6 @@ grid.render = (element, localState) => {
       localState.childrenCleanups.push(cellInstans.cleanup);
       row.append(cellInstans.element);
     }
-    element.append(row, jail);
+    element.append(row );
   }
 };
