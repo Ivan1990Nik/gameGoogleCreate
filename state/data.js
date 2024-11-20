@@ -196,6 +196,7 @@ export function movePlayer(playerNumber, direction) {
   }
   let prevPosition = { ..._state.positions["player" + playerNumber] };
   _state.positions["player" + playerNumber] = newCoords;
+  
 
   if (_isPlayerInOnePositionWithGoogle(playerNumber)) {
     _catchGoogle(playerNumber);
@@ -216,9 +217,11 @@ function moveToJail(playerNumber) {
   } else if (playerNumber === 2) {
     _state.positions.player2.isInJail = true;
   }
+  const x = playerNumber
+  _notify(EVENTS.PLAYER_PRISON, {
+x: x
+  })
   
-  
-  console.log(`Игрок ${playerNumber} попал в тюрьму!`);
 }
 
 
@@ -245,7 +248,7 @@ function _catchGoogle(playerNumber) {
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
-    _notify(EVENTS.STATUS_CHANGED, {});
+    _notify(EVENTS.STATUS_CHANGED,);
   }
   _teleportGoogle();
 }

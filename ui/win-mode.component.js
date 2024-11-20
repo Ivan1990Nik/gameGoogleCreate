@@ -5,7 +5,7 @@ import { getWinMessage, playAgain, subscribe} from "../state/data.js";
 export function WinMode() {
   const element = liba.create("div", ["win-wraper"]);
 
-  const unsubscribe = subscribe((event) => {
+  const unsubscribe = subscribe(() => {
       WinMode.render(element);
     }
   );

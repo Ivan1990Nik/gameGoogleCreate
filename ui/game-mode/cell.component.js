@@ -21,7 +21,7 @@ export function cell(x, y) {
       ) {
         cell.render(element, x, y);
       }
-    }
+    } 
   });
 
   cell.render(element, x, y);
@@ -42,14 +42,23 @@ cell.render = (element, x, y) => {
   const player1 = player_1();
   const player2 = player_2();
 
-  if (x === positions.google.x && y === positions.google.y) {
+
+ if (x === positions.google.x && y === positions.google.y) {
     element.append(playerGoogle);
   }
+
   if (x === positions.player1.x && y === positions.player1.y) {
     element.append(player1);
   }
+
   if (x === positions.player2.x && y === positions.player2.y) {
     element.append(player2);
   }
+
+
+  
+  /* if (x === positions.player2.x && y === positions.player2.y) {
+    element.append(player2);
+  } */
 };
 
