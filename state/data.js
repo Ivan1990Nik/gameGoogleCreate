@@ -21,9 +21,12 @@ const _state = {
     player1: 0,
     player2: 0,
   },
+  jail: {
+    player1isInJail: false,
+    player2isInJail: false,
+  },
   win: "",
 };
-
 
 export function getWinMessage() {
   return _state.win;
@@ -52,7 +55,9 @@ export function subscribe(callback) {
 export function unsubscribe(callback) {
   _observers = _observers.filter((o) => o !== callback);
 }
-
+export function gerJail() {
+  return _state.jail
+}
 export function getresultPoints() {
   return _state.settings;
 }
@@ -196,13 +201,12 @@ export function movePlayer(playerNumber, direction) {
   }
   let prevPosition = { ..._state.positions["player" + playerNumber] };
   _state.positions["player" + playerNumber] = newCoords;
-  
 
   if (_isPlayerInOnePositionWithGoogle(playerNumber)) {
     _catchGoogle(playerNumber);
   }
   if (_playersMeeting(playerNumber)) {
-    moveToJail(playerNumber)
+    moveToJail(playerNumber);
   }
   _notify(EVENTS.PLAYER_MOVED, {
     newPosition: { ...newCoords },
@@ -210,21 +214,39 @@ export function movePlayer(playerNumber, direction) {
     playerNumber: playerNumber,
   });
 }
-
+/* 
 function moveToJail(playerNumber) {
   if (playerNumber === 1) {
-    _state.positions.player1.isInJail = true;
+    _state.jail.player1isInJail = true;
   } else if (playerNumber === 2) {
-    _state.positions.player2.isInJail = true;
+    _state.jail.player2isInJail = true;
   }
-  const x = playerNumber
-  _notify(EVENTS.PLAYER_PRISON, {
-x: x
-  })
+  _notify(EVENTS.PLAYER_PRISON);
+} */
+
+  function moveToJail(playerNumber) {
+    if (playerNumber === 1) {
+      _state.jail.player1isInJail = true;
   
-}
-
-
+      // Устанавливаем таймер на 2 секунды
+      setTimeout(() => {
+        _state.jail.player1isInJail = false; // Устанавливаем player1isInJail в false
+        _notify(EVENTS.PLAYER_PRISON); // Уведомляем о том, что игрок 1 вышел из тюрьмы
+      }, 1000);
+      
+    } else if (playerNumber === 2) {
+      _state.jail.player2isInJail = true;
+  
+      // Устанавливаем таймер на 2 секунды
+      setTimeout(() => {
+        _state.jail.player2isInJail = false; // Устанавливаем player2isInJail в false
+        _notify(EVENTS.PLAYER_PRISON); // Уведомляем о том, что игрок 2 вышел из тюрьмы
+      }, 1000);
+    }
+  
+    _notify(EVENTS.PLAYER_PRISON); // Уведомляем о том, что игрок был помещен в тюрьму
+  }
+  
 
 function _isPlayerInOnePositionWithGoogle(playerNumber) {
   const playerPosition = _state.positions["player" + playerNumber];
@@ -248,7 +270,7 @@ function _catchGoogle(playerNumber) {
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
-    _notify(EVENTS.STATUS_CHANGED,);
+    _notify(EVENTS.STATUS_CHANGED);
   }
   _teleportGoogle();
 }
