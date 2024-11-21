@@ -8,15 +8,13 @@ import { SettingsMode } from "./settings-mode.component.js";
 import { WinMode } from "./win-mode.component.js";
 
 export const Game = () => {
-  console.log("game load...");
+
   const element = liba.create("div");
   const localState = { childrenCleanups: [] };
 
   const unsubscribe = subscribe((event) => {
     if (event.type === EVENTS.STATUS_CHANGED) {
       Game.render(element, localState);
-    } else {
-      console.log("ignor" + event.type)
     }
   });
 
@@ -33,7 +31,6 @@ export const Game = () => {
 
 Game.render = (element, localState) => {
   const status = getStatus();
-  console.log("game load");
   localState.status = status;
   element.innerHTML = "";
   localState.childrenCleanups.forEach((cc) => cc());

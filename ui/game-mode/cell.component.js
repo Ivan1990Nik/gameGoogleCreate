@@ -2,7 +2,7 @@ import { googlePlayer } from "./game-participants/google.player.component.js";
 import { player_2 } from "./game-participants/player-2.js";
 import { player_1 } from "./game-participants/player-1.js";
 import { liba } from "../../shared/liba.js";
-import { gerJail, getPositions, subscribe } from "../../state/data.js";
+import { getJail, getPositions, subscribe } from "../../state/data.js";
 import { EVENTS } from "../../state/EVENTS.js";
 
 export function cell(x, y) {
@@ -37,15 +37,15 @@ export function cell(x, y) {
 }
 
 cell.render = (element, x, y) => {
-  console.log("cell load...");
+
   element.innerHTML = "";
-  const playerJail = gerJail();
+  const playerJail = getJail();
   const positions = getPositions();
   const playerGoogle = googlePlayer();
   const player1 = player_1();
   const player2 = player_2();
-  const jail = playerJail.player1isInJail;
-  const jail1 = playerJail.player2isInJail;
+  const jail = playerJail.playerisInJail1;
+  const jail1 = playerJail.playerisInJail2;
 
   if (x === positions.google.x && y === positions.google.y) {
     element.append(playerGoogle);
@@ -58,7 +58,5 @@ cell.render = (element, x, y) => {
   if (x === positions.player2.x && y === positions.player2.y && !jail) {
     element.append(player2);
   }
-  console.log(jail);
-  console.log(jail1);
-
+  
 };

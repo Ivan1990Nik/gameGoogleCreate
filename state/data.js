@@ -22,8 +22,8 @@ const _state = {
     player2: 0,
   },
   jail: {
-    player1isInJail: false,
-    player2isInJail: false,
+    playerisInJail1: false,
+    playerisInJail2: false,
   },
   win: "",
 };
@@ -55,7 +55,7 @@ export function subscribe(callback) {
 export function unsubscribe(callback) {
   _observers = _observers.filter((o) => o !== callback);
 }
-export function gerJail() {
+export function getJail() {
   return _state.jail
 }
 export function getresultPoints() {
@@ -75,18 +75,17 @@ export function getPoins() {
 }
 
 let localState = { ..._state.points };
-
 function resetPoints() {
   for (const player in localState) {
     _state.points[player] = 0; // Сбрасываем очки каждого игрока
   }
 }
 function removePlayer(playerKey) {
-  if (_state.points[playerKey] !== undefined) {
+  if (!_state.points[playerKey]) {
     delete _state.points[playerKey];
   }
   _state.positions.player2 = { x: undefined, y: undefined };
-  return _state;
+  /* return _state; */
 }
 
 export function playAgain() {
@@ -101,7 +100,7 @@ export function startGame(
   selectedPointsLose,
   isTwoPlayer
 ) {
-  if (isTwoPlayer === false) {
+  if (!isTwoPlayer) {
     removePlayer("player2");
   }
   _state.status = GAME_STATUSES.IN_PROGRESS;
@@ -112,11 +111,16 @@ export function startGame(
 
   _notify(EVENTS.STATUS_CHANGED);
   _teleportGoogle();
-
+  
+  
   jumpIntervalId = setInterval(_escapeGoogle, 1000);
 }
 
 let jumpIntervalId;
+
+
+
+
 
 function selectingNumberOfGrids(selectedGridSize) {
   switch (selectedGridSize) {
@@ -214,39 +218,25 @@ export function movePlayer(playerNumber, direction) {
     playerNumber: playerNumber,
   });
 }
-/* 
-function moveToJail(playerNumber) {
-  if (playerNumber === 1) {
-    _state.jail.player1isInJail = true;
-  } else if (playerNumber === 2) {
-    _state.jail.player2isInJail = true;
-  }
-  _notify(EVENTS.PLAYER_PRISON);
-} */
 
-  function moveToJail(playerNumber) {
-    if (playerNumber === 1) {
-      _state.jail.player1isInJail = true;
-  
-      // Устанавливаем таймер на 2 секунды
-      setTimeout(() => {
-        _state.jail.player1isInJail = false; // Устанавливаем player1isInJail в false
-        _notify(EVENTS.PLAYER_PRISON); // Уведомляем о том, что игрок 1 вышел из тюрьмы
-      }, 1000);
-      
-    } else if (playerNumber === 2) {
-      _state.jail.player2isInJail = true;
-  
-      // Устанавливаем таймер на 2 секунды
-      setTimeout(() => {
-        _state.jail.player2isInJail = false; // Устанавливаем player2isInJail в false
-        _notify(EVENTS.PLAYER_PRISON); // Уведомляем о том, что игрок 2 вышел из тюрьмы
-      }, 1000);
-    }
-  
-    _notify(EVENTS.PLAYER_PRISON); // Уведомляем о том, что игрок был помещен в тюрьму
-  }
-  
+
+function moveToJail(playerNumber) {
+  const playerKey = `playerisInJail${playerNumber}`;
+  _state.jail[playerKey] = true;
+
+
+  const audio = new Audio('wer/jail.mp3'); 
+  audio.play().catch(error => {
+    console.error("Ошибка при воспроизведении звука:", error);
+  });
+
+  setTimeout(() => {
+    _state.jail[playerKey] = false;
+    _notify(EVENTS.PLAYER_PRISON);
+  }, 1000);
+
+  _notify(EVENTS.PLAYER_PRISON);
+}
 
 function _isPlayerInOnePositionWithGoogle(playerNumber) {
   const playerPosition = _state.positions["player" + playerNumber];
@@ -264,12 +254,22 @@ function _catchGoogle(playerNumber) {
   jumpIntervalId = setInterval(_escapeGoogle, 1000);
   _state.points.google--;
 
+  const audio = new Audio('wer/cach.mp3'); 
+  audio.play().catch(error => {
+    console.error("Ошибка при воспроизведении звука:", error);
+  });
+
+
   if (_state.points["player" + playerNumber] === _state.settings.pointsToWin) {
     const result = playerNumber === 1 ? "Player 1 Wins!" : "Player 2 Wins!";
     setWinMessage(result);
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
+    const audio = new Audio('wer/win.mp3'); 
+  audio.play().catch(error => {
+    console.error("Ошибка при воспроизведении звука:", error);
+  });
     _notify(EVENTS.STATUS_CHANGED);
   }
   _teleportGoogle();
@@ -296,6 +296,10 @@ function _teleportGoogle() {
   if (_state.points.google === _state.settings.pointsToLose) {
     resetPositionPlayers();
     _state.status = GAME_STATUSES.LOSE;
+    const audio = new Audio('wer/lose.mp3'); 
+    audio.play().catch(error => {
+      console.error("Ошибка при воспроизведении звука:", error);
+    });
     clearInterval(jumpIntervalId);
     _notify(EVENTS.STATUS_CHANGED);
   }

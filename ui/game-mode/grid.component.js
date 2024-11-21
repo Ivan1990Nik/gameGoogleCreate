@@ -3,7 +3,7 @@ import { getGridSize } from "../../state/data.js";
 import { cell } from "./cell.component.js";
 
 export const grid = () => {
-  console.log("grid load");
+
   const element = liba.create("table", ["style__grid--table"]);
 
   const localState = {
@@ -21,7 +21,7 @@ export const grid = () => {
 };
 
 grid.render = (element, localState) => {
-  console.log("grid load.....");
+
   element.innerHTML = "";
   localState.childrenCleanups.forEach((cc) => cc());
   localState.childrenCleanups = [];

@@ -2,7 +2,6 @@ import { liba } from "../shared/liba.js";
 import { startGame } from "../state/data.js";
 
 export function SettingsMode() {
-  console.log("setting load...");
 
   const element = liba.create("div", ["style__component--setting"]);
   SettingsMode.render(element);

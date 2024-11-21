@@ -1,5 +1,5 @@
 import { liba } from "../../shared/liba.js";
-import {  gerJail, subscribe } from "../../state/data.js";
+import {  getJail, subscribe } from "../../state/data.js";
 import { EVENTS } from "../../state/EVENTS.js";
 import { player_1 } from "./game-participants/player-1.js";
 import { player_2 } from "./game-participants/player-2.js";
@@ -26,9 +26,9 @@ export function jail() {
 }
 
 jail.render = (element) => {
-  const positions = gerJail();
-  const isPlayer1InJail = positions.player1isInJail;
-  const isPlayer2InJail = positions.player2isInJail;
+  const positions = getJail();
+  const isPlayer1InJail = positions.playerisInJail1;
+  const isPlayer2InJail = positions.playerisInJail2;
 
   element.innerHTML = "";
 
