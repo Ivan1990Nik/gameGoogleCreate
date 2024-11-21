@@ -252,7 +252,6 @@ function _catchGoogle(playerNumber) {
   _state.points["player" + playerNumber]++;
   clearInterval(jumpIntervalId);
   jumpIntervalId = setInterval(_escapeGoogle, 1000);
-  _state.points.google--;
 
   const audio = new Audio('wer/cach.mp3'); 
   audio.play().catch(error => {
@@ -291,8 +290,10 @@ function _teleportGoogle() {
   const prevPosition = { ..._state.positions.google };
   _state.positions.google.x = newX;
   _state.positions.google.y = newY;
-  _state.points.google++;
 
+
+
+  
   if (_state.points.google === _state.settings.pointsToLose) {
     resetPositionPlayers();
     _state.status = GAME_STATUSES.LOSE;
@@ -308,6 +309,9 @@ function _teleportGoogle() {
     prevPosition: prevPosition,
   });
 }
+
+
+
 
 function resetPositionPlayers() {
   _state.positions.player1 = { x: 0, y: 0 };
@@ -333,6 +337,7 @@ function _isInsideGrid(coords) {
 
 function _escapeGoogle() {
   _notify(EVENTS.GOOGLE_ESCAPED);
+  _state.points.google++;
   _teleportGoogle();
 }
 
