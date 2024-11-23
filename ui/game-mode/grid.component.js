@@ -28,6 +28,7 @@ grid.render = (element, localState) => {
 
   const gridSize = getGridSize();
 
+  
 
   for (let y = 0; y < gridSize.rowsCount; y++) {
     const row = liba.create("tr");
@@ -40,3 +41,5 @@ grid.render = (element, localState) => {
     element.append(row );
   }
 };
+
+

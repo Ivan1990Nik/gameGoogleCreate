@@ -60,8 +60,16 @@ SettingsMode.render = (element) => {
     { value: "2", text: "30" },
     { value: "3", text: "40" },
   ];
+  const difficultyLevel = [
+    { value: "easy", text: "easy" },
+    { value: "normal", text: "normal" },
+    { value: "hard", text: "hard" },
+  ];
+
 
   element.append(
+    createLabel("Уровень сложности:", "difficultySelect"),
+    createSelect("difficultySelect", difficultyLevel),
     createLabel("Выберите размер сетки:", "gridSizeSelect"),
     createSelect("gridSizeSelect", gridSizeOptions),
     createLabel("Выберите очки для победы:", "pointsWinSelect"),
@@ -75,11 +83,12 @@ SettingsMode.render = (element) => {
   startButtonElement.append("START 🚀");
 
   startButtonElement.addEventListener("click", () => {
+    const selecteddifficulty = document.getElementById("difficultySelect").value;
     const selectedGridSize = document.getElementById("gridSizeSelect").value;
     const selectedPointsWin = document.getElementById("pointsWinSelect").value;
     const selectedPointsLose = document.getElementById("pointsLoseSelect").value;
     const isSoundEnabled = document.getElementById("isTwoPlayer").checked; // Получаем состояние чекбокса
-    startGame(selectedGridSize, selectedPointsWin, selectedPointsLose, isSoundEnabled); // Передаем состояние чекбокса в startGame
+    startGame(selectedGridSize, selectedPointsWin, selectedPointsLose, isSoundEnabled, selecteddifficulty); // Передаем состояние чекбокса в startGame
   });
 
   element.append(startButtonElement);

@@ -25,7 +25,7 @@ const _state = {
     playerisInJail1: false,
     playerisInJail2: false,
   },
-  win: "",
+  win: ""
 };
 
 export function getWinMessage() {
@@ -94,12 +94,36 @@ export function playAgain() {
   _notify(EVENTS.STATUS_CHANGED);
 }
 
+
+const audio = new Audio('wer/bacgraund.mp3');
+
+// Функция для воспроизведения аудио
+function playAudio() {
+  audio.play().catch(error => {
+    console.error("Ошибка при воспроизведении звука:", error);
+  });
+}
+
+// Функция для остановки аудио
+function stopAudio() {
+  audio.pause(); // Останавливаем воспроизведение
+  audio.currentTime = 0; // Сбрасываем время на начало
+}
+
+
+let jumpIntarval  = ""
+
+
 export function startGame(
   selectedGridSize,
   selectedPointsWin,
   selectedPointsLose,
-  isTwoPlayer
+  isTwoPlayer,
+  selecteddifficulty
 ) {
+
+  playAudio()
+  _teleportGoogle()
   if (!isTwoPlayer) {
     removePlayer("player2");
   }
@@ -108,19 +132,32 @@ export function startGame(
   selectingNumberOfGrids(selectedGridSize);
   selectingNumberWin(selectedPointsWin);
   selectingNumberLose(selectedPointsLose);
+  difficultyLevel(selecteddifficulty)
+
+  jumpIntervalId = setInterval(_escapeGoogle, jumpIntarval );
 
   _notify(EVENTS.STATUS_CHANGED);
-  _teleportGoogle();
   
   
-  jumpIntervalId = setInterval(_escapeGoogle, 1000);
 }
 
 let jumpIntervalId;
 
+window._teleportGoogle = _teleportGoogle
 
-
-
+function difficultyLevel (selecteddifficulty) {
+  switch (selecteddifficulty) {
+    case "easy":
+      jumpIntarval  = 1000
+      break;
+    case "normal":
+      jumpIntarval  = 800
+      break;
+    case "hard":
+      jumpIntarval  = 600
+      break;
+  }
+}
 
 function selectingNumberOfGrids(selectedGridSize) {
   switch (selectedGridSize) {
@@ -251,8 +288,8 @@ function _isPlayerInOnePositionWithGoogle(playerNumber) {
 function _catchGoogle(playerNumber) {
   _state.points["player" + playerNumber]++;
   clearInterval(jumpIntervalId);
-  jumpIntervalId = setInterval(_escapeGoogle, 1000);
-  _state.points.google--;
+  jumpIntervalId = setInterval(_escapeGoogle, jumpIntarval );
+
 
   const audio = new Audio('wer/cach.mp3'); 
   audio.play().catch(error => {
@@ -263,6 +300,7 @@ function _catchGoogle(playerNumber) {
   if (_state.points["player" + playerNumber] === _state.settings.pointsToWin) {
     const result = playerNumber === 1 ? "Player 1 Wins!" : "Player 2 Wins!";
     setWinMessage(result);
+    stopAudio()
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
@@ -276,6 +314,7 @@ function _catchGoogle(playerNumber) {
 }
 
 function _teleportGoogle() {
+
   const newX = _getRandomInt(getGridSize().columnsCount);
   const newY = _getRandomInt(getGridSize().rowsCount);
 
@@ -291,10 +330,13 @@ function _teleportGoogle() {
   const prevPosition = { ..._state.positions.google };
   _state.positions.google.x = newX;
   _state.positions.google.y = newY;
-  _state.points.google++;
+  
 
+
+  
   if (_state.points.google === _state.settings.pointsToLose) {
     resetPositionPlayers();
+    stopAudio()
     _state.status = GAME_STATUSES.LOSE;
     const audio = new Audio('wer/lose.mp3'); 
     audio.play().catch(error => {
@@ -332,6 +374,7 @@ function _isInsideGrid(coords) {
 }
 
 function _escapeGoogle() {
+  _state.points.google++;
   _notify(EVENTS.GOOGLE_ESCAPED);
   _teleportGoogle();
 }

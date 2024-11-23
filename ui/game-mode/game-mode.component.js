@@ -31,4 +31,4 @@ GameMode.render = (element, localState) => {
   element.append(resultPanelInsatance.element);
   element.append(gridComponentInstance.element);
 };
- 
+
