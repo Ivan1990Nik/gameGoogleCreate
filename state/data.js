@@ -95,7 +95,7 @@ export function playAgain() {
 }
 
 
-const audio = new Audio('wer/bacgraund.mp3');
+const audio = new Audio('music/bacgraund.mp3');
 
 // Функция для воспроизведения аудио
 function playAudio() {
@@ -105,14 +105,19 @@ function playAudio() {
 }
 
 // Функция для остановки аудио
-function stopAudio() {
-  audio.pause(); // Останавливаем воспроизведение
-  audio.currentTime = 0; // Сбрасываем время на начало
+function stopAudio(id) {
+  if (id === 1) {
+    audio.pause(); // Останавливаем воспроизведение
+    audio.currentTime = 0; // Сбрасываем время на начало
+  } {
+    audio.pause(); // Останавливаем воспроизведение
+  }
+
 }
 
 
-let jumpIntarval  = ""
-
+let jumpIntarval;
+let jumpIntervalId;
 
 export function startGame(
   selectedGridSize,
@@ -128,7 +133,6 @@ export function startGame(
     removePlayer("player2");
   }
   _state.status = GAME_STATUSES.IN_PROGRESS;
-
   selectingNumberOfGrids(selectedGridSize);
   selectingNumberWin(selectedPointsWin);
   selectingNumberLose(selectedPointsLose);
@@ -141,7 +145,7 @@ export function startGame(
   
 }
 
-let jumpIntervalId;
+
 
 window._teleportGoogle = _teleportGoogle
 
@@ -191,7 +195,7 @@ function selectingNumberWin(selectedPointsWin) {
 function selectingNumberLose(selectedPointsLose) {
   switch (selectedPointsLose) {
     case "1":
-      _state.settings.pointsToLose = 10;
+      _state.settings.pointsToLose = 1100;
       break;
     case "2":
       _state.settings.pointsToLose = 30;
@@ -262,7 +266,7 @@ function moveToJail(playerNumber) {
   _state.jail[playerKey] = true;
 
 
-  const audio = new Audio('wer/jail.mp3'); 
+  const audio = new Audio('music/jail.mp3'); 
   audio.play().catch(error => {
     console.error("Ошибка при воспроизведении звука:", error);
   });
@@ -288,10 +292,10 @@ function _isPlayerInOnePositionWithGoogle(playerNumber) {
 function _catchGoogle(playerNumber) {
   _state.points["player" + playerNumber]++;
   clearInterval(jumpIntervalId);
-  jumpIntervalId = setInterval(_escapeGoogle, 1000);
-  _state.points.google--;
+  jumpIntervalId = setInterval(_escapeGoogle, jumpIntarval );
 
-  const audio = new Audio('wer/cach.mp3'); 
+
+  const audio = new Audio('music/cach.mp3'); 
   audio.play().catch(error => {
     console.error("Ошибка при воспроизведении звука:", error);
   });
@@ -300,11 +304,11 @@ function _catchGoogle(playerNumber) {
   if (_state.points["player" + playerNumber] === _state.settings.pointsToWin) {
     const result = playerNumber === 1 ? "Player 1 Wins!" : "Player 2 Wins!";
     setWinMessage(result);
-    stopAudio()
+    stopAudio(1)
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
-    const audio = new Audio('wer/win.mp3'); 
+    const audio = new Audio('music/win.mp3'); 
   audio.play().catch(error => {
     console.error("Ошибка при воспроизведении звука:", error);
   });
@@ -330,13 +334,15 @@ function _teleportGoogle() {
   const prevPosition = { ..._state.positions.google };
   _state.positions.google.x = newX;
   _state.positions.google.y = newY;
-  _state.points.google++;
+  
 
+
+  
   if (_state.points.google === _state.settings.pointsToLose) {
     resetPositionPlayers();
-    stopAudio()
+    stopAudio(1)
     _state.status = GAME_STATUSES.LOSE;
-    const audio = new Audio('wer/lose.mp3'); 
+    const audio = new Audio('music/lose.mp3'); 
     audio.play().catch(error => {
       console.error("Ошибка при воспроизведении звука:", error);
     });
@@ -348,9 +354,6 @@ function _teleportGoogle() {
     prevPosition: prevPosition,
   });
 }
-
-
-
 
 function resetPositionPlayers() {
   _state.positions.player1 = { x: 0, y: 0 };
@@ -377,10 +380,15 @@ function _isInsideGrid(coords) {
 function _escapeGoogle() {
   _state.points.google++;
   _notify(EVENTS.GOOGLE_ESCAPED);
-  _state.points.google++;
   _teleportGoogle();
 }
 
 function _getRandomInt(max) {
   return Math.floor(Math.random() * max);
+}
+export function pauseGame() {
+  stopAudio()
+  clearInterval(jumpIntervalId);
+  _state.status = GAME_STATUSES.SETTINGS;
+  _notify(EVENTS.STATUS_CHANGED);
 }

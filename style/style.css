@@ -13,7 +13,7 @@ body {
 }
 
 .style__grid {
-  border-radius: 20px;
+  border-radius: 5px;
   border: 2px solid rgba(72, 72, 185, 0.137);
   padding: 10px;
   width: 50px;
@@ -46,6 +46,20 @@ text-align: center;
 width: 42px;
 height: 42px;
 margin-left: 4px;
+}
+
+.img__pause {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  display: block;
+  border-radius: 20px;
+  
+  width: 80px;
+  height: 30px;
+  
+  transition: all 0.2s ease;
+  
 
 }
 
