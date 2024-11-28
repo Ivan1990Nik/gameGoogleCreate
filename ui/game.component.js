@@ -8,7 +8,6 @@ import { SettingsMode } from "./settings-mode.component.js";
 import { WinMode } from "./win-mode.component.js";
 
 export const Game = () => {
-
   const element = liba.create("div");
   const localState = { childrenCleanups: [] };
 

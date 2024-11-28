@@ -389,6 +389,6 @@ function _getRandomInt(max) {
 export function pauseGame() {
   stopAudio()
   clearInterval(jumpIntervalId);
-  _state.status = GAME_STATUSES.SETTINGS;
+  _state.status = GAME_STATUSES.IN_PROGRESS;
   _notify(EVENTS.STATUS_CHANGED);
 }
