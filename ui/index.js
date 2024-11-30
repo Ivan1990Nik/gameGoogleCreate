@@ -1,24 +1,17 @@
-import { liba } from "../shared/liba.js";
 import { movePlayer } from "../state/data.js";
 import { MOVE_DIRECTIONS } from "../state/MOVE_DIRECTIONS.js";
 import { Game } from "./game.component.js";
+import { panelUser } from "./header__top.js";
 
-const rootElement = document.getElementById("root");
-const item = liba.create("div", ["s"])
-  item.append("!")
-  rootElement.append(item);
+export const rootElement = document.getElementById("root");
+
+
 function render() {
-  
   const gameInstance = Game();
-  /* rootElement.append(item); */
-
-
+  const panelUserInstance = panelUser()
+  rootElement.append(panelUserInstance.element)
   rootElement.append(gameInstance.element);
 }
-
-
-
-
 
 window.addEventListener("keyup", (event) => {
   switch (event.code) {
@@ -53,7 +46,3 @@ window.addEventListener("keyup", (event) => {
   }
 });
 render();
-
-
-
-

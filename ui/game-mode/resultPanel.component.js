@@ -29,7 +29,7 @@ Object.keys(points).forEach((playerKey) => {
   const resultPointElement = liba.create("div", ["style__ponelResult"]);
   resultPointElement.append(`${playerKey}: ${score}`); 
   element.append(resultPointElement);
-  element.append(pauseGame)
+ /*  element.append(pauseGame) */
 });
 };
 

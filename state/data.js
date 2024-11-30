@@ -96,7 +96,6 @@ export function playAgain() {
 
 
 const audio = new Audio('music/bacgraund.mp3');
-
 // Функция для воспроизведения аудио
 function playAudio() {
   audio.play().catch(error => {
@@ -389,6 +388,12 @@ function _getRandomInt(max) {
 export function pauseGame() {
   stopAudio()
   clearInterval(jumpIntervalId);
-  _state.status = GAME_STATUSES.IN_PROGRESS;
   _notify(EVENTS.STATUS_CHANGED);
 }
+export function playNoPauseGame() {
+  playAudio()
+  _teleportGoogle()
+  _notify(EVENTS.STATUS_CHANGED);
+}
+
+

@@ -50,18 +50,26 @@ margin-left: 4px;
 }
 
 .img__pause {
+  border: 0;
   margin: 0;
   padding: 0;
   text-align: center;
   display: block;
   border-radius: 20px;
+  margin-top: 5px;
+  width: 35px; 
+  height: 20px;
+  margin-left: 10px;
+  transition: all 0.2s ease;
+  background-color: #0c2d45;
   
-  width: 80px;
-  height: 30px;
-  
+}
+.img__pause:hover{
+
+
+  margin-left: 10px;
   transition: all 0.2s ease;
   
-
 }
 
 .style__select {
@@ -156,11 +164,10 @@ margin: 10px 0 60px;
 
 
 
-.s {
-  background-color: #d4c3c3c4;
+.style__header-top {
+  background-color: #7da19b67;
   width: 600px;
-  height: 50px;
+  height: 30px;
   display: flex;
   margin: 0 auto;
-  justify-content: center;
 }
