@@ -13,8 +13,8 @@ const _state = {
   },
   positions: {
     google: { x: null, y: null },
-    player1: { x: 0, y: 0, isInJail: false },
-    player2: { x: 1, y: 0, isInJail: false },
+    player1: { x: 0, y: 0},
+    player2: { x: 1, y: 0},
   },
   points: {
     google: 0,
@@ -104,15 +104,24 @@ function playAudio() {
 }
 
 // Функция для остановки аудио
-function stopAudio(id) {
-  if (id === 1) {
-    audio.pause(); // Останавливаем воспроизведение
-    audio.currentTime = 0; // Сбрасываем время на начало
-  } {
-    audio.pause(); // Останавливаем воспроизведение
-  }
+/* function stopAudio() {
+    audio.volume = 0;
+} */
 
+
+    let isMuted = false;
+// Функция для переключения звука
+function stopAudio() {
+  if (isMuted) {
+    audio.volume = 1; // Восстанавливаем громкость
+  } else {
+    audio.volume = 0; // Отключаем звук
+  }
+  isMuted = !isMuted; // Переключаем состояние
 }
+
+
+
 
 
 let jumpIntarval;
@@ -303,7 +312,6 @@ function _catchGoogle(playerNumber) {
   if (_state.points["player" + playerNumber] === _state.settings.pointsToWin) {
     const result = playerNumber === 1 ? "Player 1 Wins!" : "Player 2 Wins!";
     setWinMessage(result);
-    stopAudio(1)
     resetPositionPlayers();
     clearInterval(jumpIntervalId);
     _state.status = GAME_STATUSES.WIN;
@@ -339,7 +347,6 @@ function _teleportGoogle() {
   
   if (_state.points.google === _state.settings.pointsToLose) {
     resetPositionPlayers();
-    stopAudio(1)
     _state.status = GAME_STATUSES.LOSE;
     const audio = new Audio('music/lose.mp3'); 
     audio.play().catch(error => {
@@ -385,15 +392,11 @@ function _escapeGoogle() {
 function _getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
-export function pauseGame() {
+
+export function muteMusic() {
   stopAudio()
-  clearInterval(jumpIntervalId);
-  _notify(EVENTS.STATUS_CHANGED);
 }
-export function playNoPauseGame() {
-  playAudio()
-  _teleportGoogle()
-  _notify(EVENTS.STATUS_CHANGED);
-}
+
+
 
 

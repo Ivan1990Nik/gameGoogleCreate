@@ -1,5 +1,4 @@
 import { liba } from "../shared/liba.js"
-import { playgamecomponent } from "./game-mode/play.js"
 import { stopgamecomponent } from "./game-mode/stop.js"
 
 
@@ -16,6 +15,5 @@ panelUser.render = (element) => {
 
     const panelUsersStopInstance = stopgamecomponent()
     element.append(panelUsersStopInstance.element)
-    const panelUserPlayInstance = playgamecomponent()
-    element.append(panelUserPlayInstance.element)
+
 }

@@ -1,4 +1,4 @@
-import { liba } from "../../shared/liba.js";
+/* import { liba } from "../../shared/liba.js";
 import {playNoPauseGame } from "../../state/data.js";
 
 
@@ -20,4 +20,4 @@ playgamecomponent.render = (element) => {
   element.addEventListener("click", () => {
     playNoPauseGame()
     });
-}
+} */
